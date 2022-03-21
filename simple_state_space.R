@@ -6,7 +6,7 @@ covid <- read.table("processed.csv", sep=" ")
 N <- nrow(covid)
 
 
-model.loc <- ("ss_model.txt")
+model.loc <- ("ss_model_modified.txt")
 jagsscript <- cat("
 model {  
    # priors on parameters
@@ -19,18 +19,16 @@ model {
    
    # likelihood
    X[1] ~ dnorm(X0 + u, inv.q);
-   EY[1] <- X[1];
-   Y[1] ~ dnorm(EY[1], inv.r);
+   Y[1] ~ dnorm(X[1], inv.r);
    for(t in 2:N) {
       X[t] ~ dnorm(X[t-1] + u, inv.q);
-      EY[t] <- X[t];
-      Y[t] ~ dnorm(EY[t], inv.r); 
+      Y[t] ~ dnorm(X[t], inv.r); 
    }
 }  
 ",  file = model.loc)
 
 jags.data <- list("Y" = covid$before/1000, "N" = N, "Y1" = covid$before[1]/1000)
-jags.params <- c("q", "r", "EY", "u")
+jags.params <- c("q", "r", "u")
 
 mod_ss <- jags.model(file = model.loc, data=jags.data)
 
