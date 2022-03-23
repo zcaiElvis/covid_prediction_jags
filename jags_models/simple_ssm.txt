@@ -1,25 +1,17 @@
 
-
 model {  
    # priors on parameters
-   u ~ dnorm(0, 0.001); 
    inv.q ~ dgamma(0.001,0.001); 
-   
    q <- 1/inv.q;
    inv.r ~ dgamma(0.001,0.001);
-   
    r <- 1/inv.r; 
-   
-   X0 ~ dnorm(Y1, 0.001);
+   X0 ~ dnorm(0, 0.001);
    
    # likelihood
-   X[1] ~ dnorm(X0 + u, inv.q);
+   X[1] ~ dnorm(X0, inv.q);
    Y[1] ~ dnorm(X[1], inv.r);
-   X[2] ~ dnorm(X[1] + u, inv.q);
-   Y[2] ~ dnorm(X[2], inv.r)
-   
-   for(t in 3:N) {
-      X[t] ~ dnorm(X[t-2] + X[t-1] + u, inv.q);
+   for(t in 2:N) {
+      X[t] ~ dnorm(X[t-1], inv.q);
       Y[t] ~ dnorm(X[t], inv.r); 
    }
 }  
