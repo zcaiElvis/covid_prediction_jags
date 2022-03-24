@@ -1,0 +1,27 @@
+
+model {  
+   # priors on parameters
+   
+   inv.q ~ dgamma(0.001,0.001); 
+   q <- 1/inv.q;
+   
+   inv.r ~ dgamma(0.001,0.001);
+   r <- 1/inv.r; 
+   
+   X0 ~ dnorm(0, 0.001);
+
+   
+   b0 ~ dnorm(0, 0.01);
+   b1 ~ dnorm(0, 0.01);
+
+   # likelihood
+   X[1] ~ dnorm(X0, inv.q);
+   log(EY[1]) <- X[1]
+   Y[1] ~ dnorm(EY[1], inv.r)
+   
+   for(t in 2:N) {
+      X[t] ~ dnorm(b0+ b1*X[t-1] , inv.q);
+      log(EY[t]) <- X[t];
+      Y[t] ~ dpois(EY[t]);
+   }
+}  

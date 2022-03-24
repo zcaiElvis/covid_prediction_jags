@@ -2,20 +2,11 @@ library(rjags)
 library(coda)
 library(R2jags)
 setwd("~/Desktop/School/2022/stat_520/stat520_project/")
-source("retrieve_data.R")
-
-## data modifications
-split <- 20
-
-mob <- read.table("data/mob_red.csv", header=TRUE, sep=",")
-dat <- cbind(mob, tail(covid, nrow(mob)))
-
-testset <- dat$revised[seq(nrow(dat)-split, nrow(dat))]
-dat$revised[seq(nrow(dat)-split, nrow(dat))] <- NA
+source("data/retrieve_data.R")
+source("functions.R")
 
 
-
-model.loc <- ("jags_models/covariates.txt")
+model_covariates.loc <- ("jags_models/covariates.txt")
 jagsscript <- cat("
 model {  
    # priors on parameters
@@ -48,26 +39,31 @@ model {
       Y[t] ~ dnorm(b0 + b1*X[t] + b2*M1[t] + b3*M2[t] + b4*M3[t] + b5*M4[t] + b6*M5[t] + b7*M6[t],  0.06);
    }
 }  
-",  file = model.loc)
+",  file = model_covariates.loc)
 
-jags.data <- list("Y" = dat$reported, "X"=dat$revised, "M1" = dat$rr, "M2" = dat$gp, "M3" = dat$p, "M4" = dat$ts, "M5" = dat$w,
-                  "M6" = dat$r,
-                  "N" = 758)
+# Nowcast
+covariate_nc.data <- list("Y" = dat_nc$reported, "X"=dat_nc$revised, "M1" = dat_nc$rr, "M2" = dat_nc$gp, "M3" = dat_nc$p, 
+                          "M4" = dat_nc$ts, "M5" = dat_nc$w,
+                          "M6" = dat_nc$r,
+                          "N" = N)
 
-# mod_ss <- jags.model(file = model.loc, data=jags.data)
-# run_jag <- coda.samples(mod_ss, variable.names = c("q", "b0", "b1", "X[758]", "X[757]", "X[756]", "X[755]", "X[754]"), n.iter=100000)
-# summary(run_jag)
+covariate_nc.jags.params <- (c("b0", "b1", "a0", "X[738:758]"))
+covariate_nc.output <- run_jag(covariate_nc.data, covariate_nc.jags.params, model_covariates.loc)
 
-
-jags.params <- (c("b0", "b1", "b2", "X[738:758]"))
-mod_lm <- R2jags::jags(jags.data, parameters.to.save= jags.params,
-                       model.file = model.loc, n.chains = 3, n.burnin = 5000, n.thin = 1,
-                       n.iter = 10000, DIC = TRUE)
+covariate_nc.output$mean$X
 
 
-pred<- mod_lm$BUGSoutput$mean$X
+# Forecast
+covariate_fc.data <- list("Y" = dat_nc$reported, "X"=dat_fc$revised, "M1" = dat_fc$rr, "M2" = dat_fc$gp, "M3" = dat_fc$p, 
+                          "M4" = dat_fc$ts, "M5" = dat_fc$w,
+                          "M6" = dat_fc$r,
+                          "N" = N)
+covariate_fc.jags.params <- (c("b0", "b1", "a0", "X[754:758]", "Y[754:758]"))
+covariate_fc.output <- run_jag(covariate_fc.data, covariate_fc.jags.params, model_covariates.loc)
 
-rmse <- function(y1,y2){
-  return(sqrt(sum((y1-y2)^2)))
-}
+covariate_fc.output$mean$X
+covariate_fc.output$mean$Y
+
+
+
 

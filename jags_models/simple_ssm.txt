@@ -7,11 +7,14 @@ model {
    r <- 1/inv.r; 
    X0 ~ dnorm(0, 0.001);
    
+   b0 ~ dnorm(0, 0.1);
+   b1 ~ dnorm(0, 0.1);
+   
    # likelihood
    X[1] ~ dnorm(X0, inv.q);
    Y[1] ~ dnorm(X[1], inv.r);
    for(t in 2:N) {
-      X[t] ~ dnorm(X[t-1], inv.q);
+      X[t] ~ dnorm(b0 + b1*X[t-1], inv.q);
       Y[t] ~ dnorm(X[t], inv.r); 
    }
 }  
