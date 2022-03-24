@@ -1,16 +1,4 @@
-library(rjags)
-library(coda)
-setwd("~/Desktop/School/2022/stat_520/stat520_project/")
-source("retrieve_data.R")
 
-
-model.loc <- ("jags_models/AR.txt")
-jagsscript <- cat("
-model {  
-   # priors on parameters
-   u ~ dnorm(0, 0.0001); 
-   
-   inv.q ~ dgamma(0.001,0.001); 
    q <- 1/inv.q;
    
    inv.r ~ dgamma(0.001,0.001);
@@ -25,7 +13,7 @@ model {
    
    for(t in 2:N) {
       X[t] ~ dnorm(X[t-1] + u, inv.q);
-      Y[t] ~ dnorm(X[t], inv.r); 
+      Y[t] ~ dnorm(X[t], 0.01); 
    }
 }  
 ",  file = model.loc)
@@ -33,6 +21,6 @@ model {
 jags.data <- list("Y" = covid_pred$reported, "X"=covid_pred$revised, "N" = N_pred)
 # jags.params <- c("q", "r", "u")
 mod_ss <- jags.model(file = model.loc, data=jags.data)
-run_jag <- coda.samples(mod_ss, variable.names = c("u", "q", "r", "X[779]", "Y[779]"), n.iter=100000)
+run_jag <- coda.samples(mod_ss, variable.names = c("u", "q", "X[779]", "Y[779]"), n.iter=100000)
 
 summary(run_jag)

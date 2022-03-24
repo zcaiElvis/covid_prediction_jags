@@ -17,6 +17,7 @@ covid_pred$reported[nrow(covid)]<-NA
 N_pred <- N
 
 
+mob <- read.table("mob_red.csv", header=TRUE, sep=",")
 
 
 

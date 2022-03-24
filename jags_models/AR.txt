@@ -18,6 +18,6 @@ model {
    
    for(t in 2:N) {
       X[t] ~ dnorm(X[t-1] + u, inv.q);
-      Y[t] ~ dnorm(X[t], inv.r); 
+      Y[t] ~ dnorm(X[t], 0.01); 
    }
 }  
