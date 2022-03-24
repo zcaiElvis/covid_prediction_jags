@@ -7,7 +7,7 @@ source("retrieve_data.R")
 ## data modifications
 split <- 20
 
-mob <- read.table("mob_red.csv", header=TRUE, sep=",")
+mob <- read.table("data/mob_red.csv", header=TRUE, sep=",")
 dat <- cbind(mob, tail(covid, nrow(mob)))
 
 testset <- dat$revised[seq(nrow(dat)-split, nrow(dat))]
