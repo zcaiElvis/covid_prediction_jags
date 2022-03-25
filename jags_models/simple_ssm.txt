@@ -8,7 +8,7 @@ model {
    X0 ~ dnorm(0, 0.001);
    
    b0 ~ dnorm(0, 0.1);
-   b1 ~ dnorm(0, 0.1);
+   b1 ~ dunif(0, 1);
    
    # likelihood
    X[1] ~ dnorm(X0, inv.q);

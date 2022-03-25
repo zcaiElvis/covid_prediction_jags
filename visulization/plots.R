@@ -5,7 +5,7 @@ library("cowplot")
 library("gridExtra")
 
 setwd("~/Desktop/School/2022/stat_520/stat520_project/")
-source("retrieve_data.R")
+source("data/retrieve_data.R")
 
 
 covid$date_report <- strptime(as.Date(covid$date_report, "%d-%m-%Y"), "%Y-%m-%d")
@@ -39,7 +39,7 @@ summary(fit_arima_diff)
 
 
 covid_rev_dist <- covid[290:nrow(covid),]
-covid_rev_dist$rev_dif<- covid_rev_dist$reported - covid_rev_dist$revised
+covid_rev_dist$rev_dif<- covid_rev_dist$revised - covid_rev_dist$reported
 covid_rev_dist <- na.omit(covid_rev_dist)
 
 covid_rev_dist$my <- format(as.Date(covid_rev_dist$date_report), "%Y-%m")
@@ -54,6 +54,16 @@ ggplot(data=covid_rev_dist, aes(rev_dif))+
 ggplot(data=covid_rev_dist, aes(x=rev_dif, fill=my))+
   geom_histogram()+
   theme_bw()+
-  xlim(c(-1000,1000))+
-  labs(title="delay distribution")
+  labs(title="delay distribution")+
+  xlab("count differences")+
+  ylab("frequency")+
+  guides(fill=guide_legend(title="Time period"))
+
+ggplot(data=covid_rev_dist, aes(x = as.Date(date_report), y=revised))+
+  geom_line()+
+  theme_bw()+
+  labs(title="Covid-19 case count")+
+  xlab("date")+
+  ylab("count")
+
   

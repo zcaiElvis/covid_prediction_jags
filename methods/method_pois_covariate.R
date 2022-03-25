@@ -14,29 +14,25 @@ model_pois.loc <- ("jags_models/pois.txt")
 jagsscript <- cat("
 model {  
    # priors on parameters
-   
    inv.q ~ dgamma(0.001,0.001); 
    q <- 1/inv.q;
+   # inv.r ~ dgamma(0.001,0.001);
+   # r <- 1/inv.r; 
+   X0 ~ dnorm(0, 0.001);
    
-   inv.r ~ dnorm(0.006,1000);
-   r <- 1/inv.r; 
+   b0 ~ dnorm(0, 0.1);
+   b1 ~ dnorm(0, 0.1);
+   b2 ~ dnorm(0, 0.1);
    
-   X0 ~ dnorm(0, 1000);
-
-   
-   # b0 ~ dnorm(0, 0.1);
-   b1 ~ dunif(0, 1);
-   b2 ~ dnorm(0, 1);
-
    # likelihood
    X[1] ~ dnorm(X0, inv.q);
-   log(EY[1]) <- X[1];
+   log(EY[1]) <- b2*X[1]
    Y[1] ~ dpois(EY[1]);
    
    for(t in 2:N) {
-      X[t] ~ dnorm(b1*X[t-1] , inv.q);
-      log(EY[t]) <- b2*X[t];
-      Y[t] ~ dpois(EY[t]);
+      X[t] ~ dnorm(b0 + b1*X[t-1], inv.q);
+      log(EY[t]) <- b2*X[t]
+      Y[t] ~ dpois(EY[t]); 
    }
 }  
 ",  file = model_pois.loc)
@@ -46,7 +42,7 @@ model {
 pois_nc.data <- list("Y" = dat_nc$reported, "X"=dat_nc$revised,
                           "N" = N)
 
-pois_nc.jags.params <- (c("b0", "b1", "X[739:758]"))
+pois_nc.jags.params <- (c("b0", "b1", "b2", "X[739:758]"))
 
 pois_nc.output <- run_jag(pois_nc.data, pois_nc.jags.params, model_pois.loc)
 

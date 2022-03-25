@@ -13,7 +13,7 @@ model {
    a0 ~ dunif(0, 1);
    
    b0 ~ dnorm(0, 0.01);
-   b1 ~ dunif(-1, 1);
+   b1 ~ dunif(0, 1);
    b2 ~ dunif(-1, 1);
    b3 ~ dunif(-1, 1);
    b4 ~ dunif(-1, 1);

@@ -22,7 +22,7 @@ model {
    a0 ~ dunif(0, 1);
    
    b0 ~ dnorm(0, 0.01);
-   b1 ~ dunif(-1, 1);
+   b1 ~ dunif(0, 1);
    b2 ~ dunif(-1, 1);
    b3 ~ dunif(-1, 1);
    b4 ~ dunif(-1, 1);
@@ -54,10 +54,10 @@ covariate_nc.output$mean$X
 
 
 # Forecast
-covariate_fc.data <- list("Y" = dat_nc$reported, "X"=dat_fc$revised, "M1" = dat_fc$rr, "M2" = dat_fc$gp, "M3" = dat_fc$p, 
+covariate_fc.data <- list("Y" = dat_fc$reported, "X"=dat_fc$revised, "M1" = dat_fc$rr, "M2" = dat_fc$gp, "M3" = dat_fc$p, 
                           "M4" = dat_fc$ts, "M5" = dat_fc$w,
                           "M6" = dat_fc$r,
-                          "N" = N)
+                          "N" = N_fc)
 covariate_fc.jags.params <- (c("b0", "b1", "a0", "X[754:758]", "Y[754:758]"))
 covariate_fc.output <- run_jag(covariate_fc.data, covariate_fc.jags.params, model_covariates.loc)
 

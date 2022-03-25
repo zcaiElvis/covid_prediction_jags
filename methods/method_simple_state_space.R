@@ -15,7 +15,7 @@ model {
    X0 ~ dnorm(0, 0.001);
    
    b0 ~ dnorm(0, 0.1);
-   b1 ~ dnorm(0, 0.1);
+   b1 ~ dunif(0, 1);
    
    # likelihood
    X[1] ~ dnorm(X0, inv.q);
@@ -37,7 +37,7 @@ sss_nc.jags.params <- (c("b0", "b1", "X[739:758]"))
 sss_nc.output <- run_jag(sss_nc.jags.data, sss_nc.jags.params, model_sss.loc)
 
 # Forecast
-sss_fc.jags.data <- list("Y" = dat_fc$reported, "X" = dat_fc$revised,  "N" = N)
+sss_fc.jags.data <- list("Y" = dat_fc$reported, "X" = dat_fc$revised,  "N" = N_fc)
 
 sss_fc.jags.params <- (c("b0", "b1", "X[754:758]", "Y[754:758]"))
 
