@@ -32,7 +32,7 @@ model {
 
 sss_nc.jags.data <- list("Y" = dat_nc$reported, "X" = dat_nc$revised,  "N" = N)
 
-sss_nc.jags.params <- (c("b0", "b1", "X[738:758]"))
+sss_nc.jags.params <- (c("b0", "b1", "X[739:758]"))
 
 sss_nc.output <- run_jag(sss_nc.jags.data, sss_nc.jags.params, model_sss.loc)
 

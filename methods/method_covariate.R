@@ -14,21 +14,21 @@ model {
    inv.q ~ dgamma(0.001,0.001); 
    q <- 1/inv.q;
    
-   inv.r ~ dgamma(0.001,0.001);
+   inv.r ~ dnorm(0.006, 10000);
    r <- 1/inv.r; 
    
-   X0 ~ dnorm(0, 0.001);
+   X0 ~ dnorm(0, 1000);
    
-   a0 ~ dnorm(0, 0.01);
+   a0 ~ dunif(0, 1);
    
    b0 ~ dnorm(0, 0.01);
-   b1 ~ dnorm(0, 0.01);
-   b2 ~ dnorm(0, 0.01);
-   b3 ~ dnorm(0, 0.01);
-   b4 ~ dnorm(0, 0.01);
-   b5 ~ dnorm(0, 0.01);
-   b6 ~ dnorm(0, 0.01);
-   b7 ~ dnorm(0, 0.01);
+   b1 ~ dunif(-1, 1);
+   b2 ~ dunif(-1, 1);
+   b3 ~ dunif(-1, 1);
+   b4 ~ dunif(-1, 1);
+   b5 ~ dunif(-1, 1);
+   b6 ~ dunif(-1, 1);
+   b7 ~ dunif(-1, 1);
    
    # likelihood
    X[1] ~ dnorm(X0, inv.q);
@@ -36,7 +36,7 @@ model {
    
    for(t in 2:N) {
       X[t] ~ dnorm(a0*X[t-1] , inv.q);
-      Y[t] ~ dnorm(b0 + b1*X[t] + b2*M1[t] + b3*M2[t] + b4*M3[t] + b5*M4[t] + b6*M5[t] + b7*M6[t],  0.06);
+      Y[t] ~ dnorm(b0 + b1*X[t] + b2*M1[t] + b3*M2[t] + b4*M3[t] + b5*M4[t] + b6*M5[t] + b7*M6[t],  inv.r);
    }
 }  
 ",  file = model_covariates.loc)
@@ -47,7 +47,7 @@ covariate_nc.data <- list("Y" = dat_nc$reported, "X"=dat_nc$revised, "M1" = dat_
                           "M6" = dat_nc$r,
                           "N" = N)
 
-covariate_nc.jags.params <- (c("b0", "b1", "a0", "X[738:758]"))
+covariate_nc.jags.params <- (c("b0", "b1", "a0", "X[739:758]"))
 covariate_nc.output <- run_jag(covariate_nc.data, covariate_nc.jags.params, model_covariates.loc)
 
 covariate_nc.output$mean$X

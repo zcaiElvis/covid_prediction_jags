@@ -18,23 +18,24 @@ model {
    inv.q ~ dgamma(0.001,0.001); 
    q <- 1/inv.q;
    
-   inv.r ~ dgamma(0.001,0.001);
+   inv.r ~ dnorm(0.006,1000);
    r <- 1/inv.r; 
    
-   X0 ~ dnorm(0, 0.001);
+   X0 ~ dnorm(0, 1000);
 
    
-   b0 ~ dnorm(0, 0.01);
-   b1 ~ dnorm(0, 0.01);
+   # b0 ~ dnorm(0, 0.1);
+   b1 ~ dunif(0, 1);
+   b2 ~ dnorm(0, 1);
 
    # likelihood
    X[1] ~ dnorm(X0, inv.q);
-   log(EY[1]) <- X[1]
-   Y[1] ~ dnorm(EY[1], inv.r)
+   log(EY[1]) <- X[1];
+   Y[1] ~ dpois(EY[1]);
    
    for(t in 2:N) {
-      X[t] ~ dnorm(b0+ b1*X[t-1] , inv.q);
-      log(EY[t]) <- X[t];
+      X[t] ~ dnorm(b1*X[t-1] , inv.q);
+      log(EY[t]) <- b2*X[t];
       Y[t] ~ dpois(EY[t]);
    }
 }  
@@ -42,10 +43,10 @@ model {
 
 
 # Nowcast
-pois_nc.data <- list("Y" = dat_pois_nc$reported, "X"=dat_pois_nc$revised,
+pois_nc.data <- list("Y" = dat_nc$reported, "X"=dat_nc$revised,
                           "N" = N)
 
-pois_nc.jags.params <- (c("b0", "b1", "X[738:758]"))
+pois_nc.jags.params <- (c("b0", "b1", "X[739:758]"))
 
 pois_nc.output <- run_jag(pois_nc.data, pois_nc.jags.params, model_pois.loc)
 

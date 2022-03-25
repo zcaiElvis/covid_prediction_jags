@@ -29,18 +29,14 @@ dat_fc$revised[seq(nrow(dat_fc)-split_fc+1, nrow(dat_fc))] <- NA
 dat_fc$reported[seq(nrow(dat_fc)-split_fc+1, nrow(dat_fc))] <- NA
 
 
-# Construction for poisson
+# Construction for ARIMA
 
-# nc
-dat_pois_nc <- cbind(mob, tail(covid, nrow(mob)))
-test_pois_nc <- dat_pois_nc$revised[seq(nrow(dat_pois_nc)-split_nc+1, nrow(dat_pois_nc))]
-dat_pois_nc <- dat_pois_nc[-seq(nrow(dat_pois_nc)-split_nc+1, nrow(dat_pois_nc))]
+# nowcast
 
-dat_pois_nc<-dat_pois_nc %>% 
-  fill(revised) %>%
-  fill(reported)
+dat_arima_nc <- cbind(mob, tail(covid, nrow(mob)))
+dat_arima_nc <- head(dat_arima_nc, n=739)
 
-# fc
+
 
 
 
